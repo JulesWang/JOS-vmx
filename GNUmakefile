@@ -106,6 +106,8 @@ USER_CXXFLAGS := $(USER_CFLAGS) -fno-exceptions -fno-rtti
 # Include Makefrags for subdirectories
 include boot/Makefrag
 include kern/Makefrag
+include lib/Makefrag
+include user/Makefrag
 
 
 IMAGES = $(OBJDIR)/kernel.img

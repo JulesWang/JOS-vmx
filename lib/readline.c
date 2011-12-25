@@ -13,7 +13,7 @@ readline(const char *prompt)
 	int i, c, echoing;
 
 	if (readline_hack) {
-		strcpy(buf, "exit");
+		strcpy(buf, "backtrace");
 		return buf;
 	}
 

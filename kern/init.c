@@ -9,6 +9,7 @@
 #include <kern/pmap.h>
 #include <kern/kclock.h>
 #include <kern/trap.h>
+#include <kern/env.h>
 
 
 void
@@ -31,9 +32,24 @@ i386_init(void)
 	// Lab 2 interrupt and gate descriptor initialization functions
 	idt_init();
 
-	// Test IDT (lab 2 only)
-	__asm__ __volatile__("int3");
-	cprintf("Breakpoint succeeded!\n");
+	// Lab 3 user environment initialization functions
+	env_init();
+
+#if JOS_MULTIENV 
+	// Should always have an idle process as first one.
+	ENV_CREATE(user_idle);
+#endif
+
+#ifdef TEST
+	// Don't touch -- used by grading script!
+	ENV_CREATE2(TEST, TESTSIZE);
+#else
+	// Touch all you want.
+	ENV_CREATE(user_hello);
+#endif // TEST*
+
+	// We only have one user environment for now, so just run it.
+	env_run(&envs[0]);
 
 	// Drop into the kernel monitor.
 	while (1)

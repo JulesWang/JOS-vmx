@@ -1,0 +1,17 @@
+OBJDIRS += user
+
+$(OBJDIR)/user/%.o: user/%.c
+	@echo + cc[USER] $<
+	@mkdir -p $(@D)
+	$(V)$(CC) -nostdinc $(USER_CFLAGS) -c -o $@ $<
+
+$(OBJDIR)/user/%.o: user/%.cc
+	@echo + c++[USER] $<
+	@mkdir -p $(@D)
+	$(V)$(CXX) -nostdinc $(USER_CXXFLAGS) -c -o $@ $<
+
+$(OBJDIR)/user/%: $(OBJDIR)/user/%.o $(OBJDIR)/lib/entry.o $(OBJDIR)/lib/libjos.a user/user.ld
+	@echo + ld $@
+	$(V)$(LD) -o $@ $(ULDFLAGS) $(LDFLAGS) -nostdlib $(OBJDIR)/lib/entry.o $@.o -L$(OBJDIR)/lib -ljos $(GCC_LIB)
+	$(V)$(OBJDUMP) -S $@ > $@.asm
+	$(V)$(NM) -n $@ | awk '{ print $$1, $$3 }' > $@.sym

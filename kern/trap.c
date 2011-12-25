@@ -6,6 +6,9 @@
 #include <kern/trap.h>
 #include <kern/console.h>
 #include <kern/monitor.h>
+#include <kern/env.h>
+#include <kern/syscall.h>
+#include <kern/picirq.h>
 
 static struct Taskstate ts;
 
@@ -81,9 +84,14 @@ idt_init(void)
 }
 
 
+// We use these variables to print "Incoming TRAP frame" lines.
+static struct Trapframe *print_trapframe_incoming, *print_trapframe_copy;
+
 void
 print_trapframe(struct Trapframe *tf)
 {
+	if (tf == print_trapframe_copy)
+		cprintf("Incoming TRAP frame at %p\n", print_trapframe_incoming);
 	cprintf("TRAP frame at %p\n", tf);
 	print_regs(&tf->tf_regs);
 	cprintf("  es   0x----%04x\n", tf->tf_es);
@@ -113,17 +121,65 @@ print_regs(struct Registers *regs)
 void
 trap(struct Trapframe *tf)
 {
+	if ((tf->tf_cs & 3) == 3) {
+		// Trapped from user mode.
+		// Copy trap frame (which is currently on the stack)
+		// into 'curenv->env_tf', so that running the environment
+		// will restart at the trap point.
+		assert(curenv);
+		curenv->env_tf = *tf;
+		// Print incoming trapframe address as well as real address.
+		print_trapframe_incoming = tf;
+		print_trapframe_copy = &curenv->env_tf;
+		// The trapframe on the stack should be ignored from here on.
+		tf = &curenv->env_tf;
+	}
+
 	// Dispatch based on what type of trap occurred
 	switch (tf->tf_trapno) {
 
 	// LAB 2: Your code here.
+
+	// Handle page faults (T_PGFLT).
+	// LAB 3: Your code here.
+
+	// Handle system calls (T_SYSCALL).
+	// LAB 3: Your code here.
 
 	default:
 		// Unexpected trap: The user process or the kernel has a bug.
 		print_trapframe(tf);
 		if (tf->tf_cs == GD_KT)
 			panic("unhandled trap in kernel");
-		else
-			panic("unhandled trap in user mode");
+		else {
+			env_destroy(curenv);
+			return;
+		}
 	}
+        // Return to the current environment, which should be runnable.
+        assert(curenv && curenv->env_status == ENV_RUNNABLE);
+        env_run(curenv);
 }
+
+void
+page_fault_handler(struct Trapframe *tf)
+{
+	uint32_t fault_va;
+
+	// Read processor's CR2 register to find the faulting address
+	fault_va = rcr2();
+
+	// Handle kernel-mode page faults.
+	
+	// LAB 3: Your code here.
+
+	// We've already handled kernel-mode exceptions, so if we get here,
+	// the page fault happened in user mode.
+
+	// Destroy the environment that caused the fault.
+	cprintf("[%08x] user fault va %08x ip %08x\n",
+		curenv->env_id, fault_va, tf->tf_eip);
+	print_trapframe(tf);
+	env_destroy(curenv);
+}
+

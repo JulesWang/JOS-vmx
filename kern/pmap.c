@@ -8,6 +8,7 @@
 
 #include <kern/pmap.h>
 #include <kern/kclock.h>
+#include <kern/env.h>
 
 // These variables are set by i386_mem_detect()
 size_t npages;			// Amount of physical memory (in pages)
@@ -122,7 +123,7 @@ boot_mem_init(void)
 	memset(kern_pgdir, 0, PGSIZE);
 
 	// Recursively insert 'kern_pgdir' in itself as a page table, to form
-	// virtual page tables at virtual addresses VPT and UVPT.
+	// a virtual page table at virtual address VPT.
 	// (For now, you don't have understand the greater purpose of the
 	// following two lines.)
 	// VPT permissions: kernel RW, user NONE
@@ -158,6 +159,20 @@ boot_mem_init(void)
 	// will help you catch bugs later.
 	//
 	// LAB 2: Your code here.
+
+	// Allocate 'envs', an array of size 'NENV' of 'struct Env' structures.
+	//
+	// LAB 3: Your code here.
+
+	// Create read-only mappings of important kernel structures, so
+	// user environments can find out some types of information without
+	// needing a system call.
+	// In particular, add mappings at these addresses:
+	// UPAGES: A read-only user-visible mapping of the pages[] array.
+	// UENVS:  A read-only user-visible mapping of the envs[] array.
+	// All permissions are kernel R, user R.
+	//
+	// LAB 3: Your code here.
 
 	// Check that the initial page directory has been set up correctly.
 	boot_mem_check();
@@ -315,7 +330,7 @@ check_va2pa(pde_t *pgdir, uintptr_t va)
 static void
 boot_mem_check(void)
 {
-	uint32_t i, n;
+	uint32_t i, n, check_umappings = 1;
 
 	// check phys mem
 	for (i = 0; KERNBASE + i != 0; i += PGSIZE)
@@ -325,6 +340,19 @@ boot_mem_check(void)
 	for (i = 0; i < KSTKSIZE; i += PGSIZE)
 		assert(check_va2pa(kern_pgdir, KSTACKTOP - KSTKSIZE + i) == PADDR(bootstack) + i);
 
+	// check user mappings for pages and envs array
+	if (check_va2pa(kern_pgdir, UPAGES) == ~0) {
+		warn("user mappings for UPAGES/UENVS not ready");
+		check_umappings = 0;
+	} else {
+		n = ROUNDUP(npages * sizeof(struct Page), PGSIZE);
+		for (i = 0; i < n; i += PGSIZE)
+			assert(check_va2pa(kern_pgdir, UPAGES + i) == PADDR(pages) + i);
+	
+		n = ROUNDUP(NENV * sizeof(struct Env), PGSIZE);
+		for (i = 0; i < n; i += PGSIZE)
+			assert(check_va2pa(kern_pgdir, UENVS + i) == PADDR(envs) + i);
+	}
 
 	// check for zero/non-zero in PDEs
 	for (i = 0; i < NPDENTRIES; i++) {
@@ -332,6 +360,13 @@ boot_mem_check(void)
 		case PDX(VPT):
 		case PDX(KSTACKTOP-1):
 			assert(kern_pgdir[i]);
+			break;
+		case PDX(UPAGES):
+		case PDX(UENVS):
+			if (check_umappings)
+				assert(kern_pgdir[i]);
+			break;
+		case PDX(UVPT):
 			break;
 		default:
 			if (i >= PDX(KERNBASE))
@@ -528,6 +563,47 @@ tlb_invalidate(pde_t *pgdir, void *va)
 	// Flush the entry only if we're modifying the current address space.
 	// For now, there is only one address space, so always invalidate.
 	invlpg(va);
+}
+
+static uintptr_t user_mem_check_addr;
+
+// Checks that environment 'env' is allowed to access the range of memory
+// [va, va+len) with permissions 'perm | PTE_P'.
+// Normally 'perm' will contain PTE_U at least, but this is not required.
+// 'va' and 'len' need not be page-aligned; you must test every page that
+// contains any of that range.  You will test either 'len/PGSIZE',
+// 'len/PGSIZE + 1', or 'len/PGSIZE + 2' pages.
+//
+// A user program can access a virtual address if (1) the address is below
+// ULIM, and (2) the page table gives it permission.  These are exactly
+// the tests you should implement here.
+//
+// If there is an error, set the 'user_mem_check_addr' variable to the first
+// erroneous virtual address.
+//
+// Returns 0 if the user program can access this range of addresses,
+// and -E_FAULT otherwise.
+//
+// Hint: The TA solution uses pgdir_walk.
+int
+user_mem_check(struct Env *env, const void *va, size_t len, int perm)
+{
+	// LAB 3: Your code here. (Exercise 6)
+
+	return 0;
+}
+
+// Checks that environment 'env' is allowed to access the range
+// of memory [va, va+len) with permissions 'perm | PTE_U | PTE_P'.
+// If it can, then the function simply returns.
+// If it cannot, 'env' is destroyed.
+void
+user_mem_assert(struct Env *env, const void *va, size_t len, int perm)
+{
+	if (user_mem_check(env, va, len, perm | PTE_U) < 0) {
+		cprintf("[%08x] user_mem_check va %08x\n", curenv->env_id, user_mem_check_addr);
+		env_destroy(env);	// may not return
+	}
 }
 
 void

@@ -7,6 +7,7 @@
 #endif
 #include <inc/memlayout.h>
 #include <inc/assert.h>
+struct Env;
 
 // Takes a kernel virtual address 'kva' -- an address that points above
 // KERNBASE, where the machine's maximum 256MB of physical memory is mapped --
@@ -93,5 +94,8 @@ void	page_decref(struct Page *pp);
 pte_t *	pgdir_walk(pde_t *pgdir, const void *va, int create);
 
 void	tlb_invalidate(pde_t *pgdir, void *va);
+
+int	user_mem_check(struct Env *env, const void *va, size_t len, int perm);
+void	user_mem_assert(struct Env *env, const void *va, size_t len, int perm);
 
 #endif /* !JOS_KERN_PMAP_H */

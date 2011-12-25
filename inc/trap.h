@@ -65,6 +65,17 @@ struct Trapframe {
 	uint16_t tf_padding4;
 };
 
+struct UTrapframe {
+	// information about the fault
+	uint32_t utf_fault_va;		// virtual address that caused fault
+	uint32_t utf_err;		// error code
+	// return state: how to recover from fault
+	struct Registers utf_regs;	// trap-time registers
+	uintptr_t utf_eip;		// trap-time eip
+	uint32_t utf_eflags;		// trap-time eflags
+	uintptr_t utf_esp;		// trap-time stack pointer
+};
+
 #endif /* !__ASSEMBLER__ */
 
 // Must equal 'sizeof(struct Trapframe)'.
