@@ -91,4 +91,46 @@ sys_page_unmap(envid_t envid, void *pg)
 
 // sys_exofork is inlined in lib.h
 
+int
+sys_env_set_pgfault_upcall(envid_t envid, void *upcall)
+{
+	return syscall(SYS_env_set_pgfault_upcall, envid, (uintptr_t) upcall, 0, 0, 0);
+}
+
+int
+sys_ipc_recv(void *dstva)
+{
+	return syscall(SYS_ipc_recv, (uintptr_t) dstva, 0, 0, 0, 0);
+}
+
+int
+sys_ipc_try_send(envid_t envid, uint32_t value, void *srcva, int perm)
+{
+	return syscall(SYS_ipc_try_send, envid, value, (uintptr_t) srcva, perm, 0);
+}
+
+int
+sys_program_lookup(const char *name, size_t len)
+{
+	return syscall(SYS_program_lookup, (uintptr_t) name, len, 0, 0, 0);
+}
+
+ssize_t
+sys_program_size(int programid)
+{
+	return syscall(SYS_program_lookup, programid, 0, 0, 0, 0);
+}
+
+int
+sys_program_page_map(envid_t dst_env, int programid, size_t offset,
+		     void *pg, int pg_perm)
+{
+	return syscall(SYS_program_page_map, dst_env, programid, offset, (uintptr_t) pg, pg_perm);
+}
+
+int
+sys_env_set_trapframe(envid_t envid, struct Trapframe *tf)
+{
+	return syscall(SYS_env_set_trapframe, envid, (uintptr_t) tf, 0, 0, 0);
+}
 

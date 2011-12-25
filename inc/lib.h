@@ -60,6 +60,27 @@ sys_exofork(void)
 	return ret;
 }
 
+int	sys_env_set_pgfault_upcall(envid_t env, void *upcall);
+int	sys_ipc_try_send(envid_t to_env, uint32_t value, void *pg, int perm);
+int	sys_ipc_recv(void *rcv_pg);
+int	sys_program_lookup(const char *name, size_t len);
+ssize_t	sys_program_size(int programid);
+int	sys_program_page_map(envid_t dst_env, int programid,
+			     size_t offset, void *pg, int pg_perm);
+int	sys_env_set_trapframe(envid_t env, struct Trapframe *tf);
+
+// ipc.c
+void	ipc_send(envid_t to_env, uint32_t value, void *pg, int perm);
+uint32_t ipc_recv(envid_t *from_env, void *pg, int *perm);
+
+// fork.c
+#define	PTE_SHARE	0x400
+envid_t	fork(void);
+envid_t	sfork(void);	// Challenge!
+
+// spawn.c
+envid_t	spawn(const char *program, const char **argv);
+envid_t	spawnl(const char *program, const char *arg0, ...);
 
 
 /* File open modes */

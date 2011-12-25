@@ -34,21 +34,29 @@ KERN_SRCFILES :=	kern/entry.S \
 # Only build files if they exist.
 KERN_SRCFILES := $(wildcard $(KERN_SRCFILES))
 
-KERN_BINFILES :=	user/hello \
-			user/buggyhello \
-			user/evilhello \
-			user/testbss \
-			user/divzero \
-			user/breakpoint \
-			user/softint \
-			user/badsegment \
-			user/faultread \
-			user/faultreadkernel \
-			user/faultwrite \
-			user/faultwritekernel \
-			user/idle \
+# Binary program images to embed within the kernel.
+KERN_BINFILES :=	user/idle \
 			user/yield \
-			user/dumbfork
+			user/dumbfork \
+			user/faultread \
+			user/faultwrite \
+			user/faultdie \
+			user/faultalloc \
+			user/faultallocbad \
+			user/faultnostack \
+			user/faultbadhandler \
+			user/faultevilhandler \
+			user/forktree \
+			user/spin \
+			user/fairness \
+			user/pingpong \
+			user/primes \
+			user/spawnhello \
+			user/hello \
+			user/init \
+			user/spawninit
+
+KERN_SRCFILES +=	kern/programs.c
 
 KERN_OBJFILES := $(patsubst %.c, $(OBJDIR)/%.o, $(KERN_SRCFILES))
 KERN_OBJFILES := $(patsubst %.S, $(OBJDIR)/%.o, $(KERN_OBJFILES))
@@ -105,3 +113,13 @@ install-grub: $(OBJDIR)/jos-grub $(OBJDIR)/fs.img
 $(OBJDIR)/jos-grub: $(OBJDIR)/kernel
 	@echo + oc $@
 	$(V)$(OBJCOPY) --adjust-vma=0x10000000 $^ $@
+
+# How to build the kernbin structures
+kern/programs.c: kern/Makefrag
+	@echo + mk $@
+	$(V)echo '#include <kern/programs.h>' >$@
+	$(V)echo $(KERN_BINFILES) | tr ' ' '\012' | grep . | sed 's/obj\/\([^\/]*\)\/\(.*\)/extern const uint8_t _binary_obj_\1_\2_start[], _binary_obj_\1_\2_size[];/' >>$@
+	$(V)echo 'struct Program programs[] = {' >>$@
+	$(V)echo $(KERN_BINFILES) | tr ' ' '\012' | grep . | sort | sed 's/obj\/\([^\/]*\)\/\(.*\)/{ "\2", _binary_obj_\1_\2_start, (int)_binary_obj_\1_\2_size },/' >>$@
+	$(V)echo "{ 0, 0, 0 } };" >>$@
+	$(V)echo 'int nprograms = sizeof(programs) / sizeof(programs[0]) - 1;' >>$@

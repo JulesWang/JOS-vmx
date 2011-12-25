@@ -164,6 +164,15 @@ env_alloc(struct Env **newenv_store, envid_t parent_id)
 	e->env_tf.tf_cs = GD_UT | 3;
 	// You will set e->env_tf.tf_eip later.
 
+	// Enable interrupts while in user mode.
+	// LAB 4: Your code here.
+
+	// Clear the page fault handler until user installs one.
+	e->env_pgfault_upcall = 0;
+
+	// Also clear the IPC receiving flag.
+	e->env_ipc_recving = 0;
+
 	// commit the allocation
 	LIST_REMOVE(e, env_link);
 	*newenv_store = e;
@@ -294,6 +303,13 @@ env_free(struct Env *e)
 		page_decref(pa2page(pa));
 	}
 
+	// Before freeing the page directory, we switch to kern_pgdir if 'e'
+	// is the currently active environment -- just in case 'e->env_pgdir'
+	// gets reused for some other purpose before we run another
+	// environment.
+	if (e == curenv)
+		lcr3(PADDR(kern_pgdir));
+	
 	// free the page directory
 	pa = PADDR(e->env_pgdir);
 	e->env_pgdir = 0;

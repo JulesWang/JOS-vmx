@@ -1,0 +1,41 @@
+   JOS
+   ---
+
+   The JOS kernel was originally developed for the Operating Systems
+   Engineering class at MIT, with subsequent development for that class and
+   for Advanced Operating Systems and Advanced Operating Systems
+   Engineering classes at UCLA, NYU, and Stanford.  This kernel uses ideas
+   and some code from Xok, an x86 implementation of the exokernel
+   architecture; Xok was originally developed by David Mazieres in Frans
+   Kaashoek's group at MIT.
+
+   JOS is dedicated to the memory of Josh Cates.
+
+   JOS Initial Design and Implementation
+   .....................................
+
+N: Josh Cates
+W: http://www-tech.mit.edu/V123/N64/64cates.64n.html
+
+N: Frans Kaashoek
+W: http://pdos.csail.mit.edu/~kaashoek/
+
+N: Emil Sit
+W: http://web.mit.edu/sit/www/
+
+   Later JOS Development
+   .....................
+
+N: Austin Clements
+W: http://www.mit.edu/~amdragon/
+
+N: Russ Cox
+W: http://swtch.com/~rsc/
+
+N: Bryan Ford
+W: http://www.brynosaurus.com/
+
+N: Cliff Frey
+
+N: Eddie Kohler
+W: http://www.cs.ucla.edu/~kohler/

@@ -12,11 +12,6 @@ readline(const char *prompt)
 {
 	int i, c, echoing;
 
-	if (readline_hack) {
-		strcpy(buf, "backtrace");
-		return buf;
-	}
-
 	if (prompt != NULL)
 		cprintf("%s", prompt);
 

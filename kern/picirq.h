@@ -15,4 +15,14 @@
 #define IRQ_SLAVE	2	// IRQ at which slave connects to master
 #define IRQ_OFFSET	32	// IRQ 0 corresponds to int IRQ_OFFSET
 
+#ifndef __ASSEMBLER__
+
+#include <inc/types.h>
+#include <inc/x86.h>
+
+extern uint16_t irq_mask_8259A;
+void pic_init(void);
+void irq_setmask_8259A(uint16_t mask);
+
+#endif // !__ASSEMBLER__
 #endif // !JOS_KERN_PICIRQ_H

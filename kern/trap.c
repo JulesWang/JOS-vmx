@@ -9,6 +9,8 @@
 #include <kern/env.h>
 #include <kern/syscall.h>
 #include <kern/picirq.h>
+#include <kern/sched.h>
+#include <kern/kclock.h>
 
 static struct Taskstate ts;
 
@@ -50,6 +52,8 @@ static const char *trapname(int trapno)
 		return excnames[trapno];
 	if (trapno == T_SYSCALL)
 		return "System call";
+	if (trapno >= IRQ_OFFSET && trapno < IRQ_OFFSET + 16)
+		return "Hardware Interrupt";
 
 	return "(unknown trap)";
 }
@@ -84,14 +88,9 @@ idt_init(void)
 }
 
 
-// We use these variables to print "Incoming TRAP frame" lines.
-static struct Trapframe *print_trapframe_incoming, *print_trapframe_copy;
-
 void
 print_trapframe(struct Trapframe *tf)
 {
-	if (tf == print_trapframe_copy)
-		cprintf("Incoming TRAP frame at %p\n", print_trapframe_incoming);
 	cprintf("TRAP frame at %p\n", tf);
 	print_regs(&tf->tf_regs);
 	cprintf("  es   0x----%04x\n", tf->tf_es);
@@ -128,9 +127,6 @@ trap(struct Trapframe *tf)
 		// will restart at the trap point.
 		assert(curenv);
 		curenv->env_tf = *tf;
-		// Print incoming trapframe address as well as real address.
-		print_trapframe_incoming = tf;
-		print_trapframe_copy = &curenv->env_tf;
 		// The trapframe on the stack should be ignored from here on.
 		tf = &curenv->env_tf;
 	}
@@ -146,6 +142,20 @@ trap(struct Trapframe *tf)
 	// Handle system calls (T_SYSCALL).
 	// LAB 3: Your code here.
 
+	// External interrupts section
+		
+	// Handle clock and serial interrupts.
+	// LAB 4: Your code here.
+
+	case IRQ_OFFSET + 8:  case IRQ_OFFSET + 9:
+	case IRQ_OFFSET + 10: case IRQ_OFFSET + 11:
+	case IRQ_OFFSET + 12: case IRQ_OFFSET + 13:
+	case IRQ_OFFSET + 14: case IRQ_OFFSET + 15:
+		// The automatic-EOI mode doesn't work on the slave (IRQs
+		// 8-15), so we must mark EOI explicitly.
+		outb(IO_PIC2, 0x60 + (tf->tf_trapno & 7));
+		break;
+
 	default:
 		// Unexpected trap: The user process or the kernel has a bug.
 		print_trapframe(tf);
@@ -156,9 +166,15 @@ trap(struct Trapframe *tf)
 			return;
 		}
 	}
-        // Return to the current environment, which should be runnable.
-        assert(curenv && curenv->env_status == ENV_RUNNABLE);
-        env_run(curenv);
+
+	// If we made it to this point, then no other environment was
+	// scheduled, so we should return to the current environment
+	// if doing so makes sense.
+	if (curenv && curenv->env_status == ENV_RUNNABLE)
+		env_run(curenv);
+	else
+		panic("unhandled trap in user mode");
+		sched_yield();
 }
 
 void
@@ -175,6 +191,33 @@ page_fault_handler(struct Trapframe *tf)
 
 	// We've already handled kernel-mode exceptions, so if we get here,
 	// the page fault happened in user mode.
+
+	// Call the environment's page fault upcall, if one exists.  Set up a
+	// page fault stack frame on the user exception stack (below
+	// UXSTACKTOP), then branch to curenv->env_pgfault_upcall.
+	//
+	// The page fault upcall might cause another page fault, in which case
+	// we branch to the page fault upcall recursively, pushing another
+	// page fault stack frame on top of the user exception stack.
+	//
+	// The trap handler needs one word of scratch space at the top of the
+	// trap-time stack in order to return.  In the non-recursive case, we
+	// don't have to worry about this because the top of the regular user
+	// stack is free.  In the recursive case, this means we have to leave
+	// an extra word between the current top of the exception stack and
+	// the new stack frame because the exception stack _is_ the trap-time
+	// stack.
+	//
+	// If there's no page fault upcall, the environment didn't allocate a
+	// page for its exception stack, or the exception stack overflows,
+	// then destroy the environment that caused the fault.
+	//
+	// Hints:
+	//   user_mem_assert() and env_run() are useful here.
+	//   To change what the user environment runs, modify 'curenv->env_tf'
+	//   (the 'tf' variable points at 'curenv->env_tf').
+	
+	// LAB 4: Your code here.
 
 	// Destroy the environment that caused the fault.
 	cprintf("[%08x] user fault va %08x ip %08x\n",

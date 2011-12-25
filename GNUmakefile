@@ -131,7 +131,7 @@ grade: $(LABSETUP)grade.sh
 	sh $(LABSETUP)grade.sh
 
 tarball: realclean
-	tar cf - `ls -a | grep -v '^\.*$$' | grep -v '^CVS$$' | grep -v '^lab[0-9].*\.tar\.gz'` | gzip > lab$(LAB)-$(USER).tar.gz
+	tar cf - `find . -type f -print | grep -v '/CVS/' | grep -v '/\.svn/' | grep -v '/lab[0-9].*\.tar\.gz'` | gzip > lab$(LAB)-$(USER).tar.gz
 
 # For test runs
 xrun:
