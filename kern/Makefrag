@@ -36,25 +36,25 @@ KERN_SRCFILES := $(wildcard $(KERN_SRCFILES))
 
 # Binary program images to embed within the kernel.
 KERN_BINFILES :=	user/idle \
-			user/yield \
-			user/dumbfork \
-			user/faultread \
-			user/faultwrite \
-			user/faultdie \
-			user/faultalloc \
-			user/faultallocbad \
-			user/faultnostack \
-			user/faultbadhandler \
-			user/faultevilhandler \
 			user/forktree \
-			user/spin \
-			user/fairness \
 			user/pingpong \
 			user/primes \
+			user/testfsipc \
+			user/writemotd \
+			user/icode \
 			user/spawnhello \
 			user/hello \
+			user/spawninit \
 			user/init \
-			user/spawninit
+			user/testpteshare \
+			user/testfdsharing \
+			user/testpipe \
+			user/testpiperace2 \
+			user/primespipe \
+			user/initsh \
+			user/testshell \
+			user/spin \
+			fs/fs
 
 KERN_SRCFILES +=	kern/programs.c
 

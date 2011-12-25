@@ -118,7 +118,7 @@ sys_program_lookup(const char *name, size_t len)
 ssize_t
 sys_program_size(int programid)
 {
-	return syscall(SYS_program_lookup, programid, 0, 0, 0, 0);
+	return syscall(SYS_program_size, programid, 0, 0, 0, 0);
 }
 
 int

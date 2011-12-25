@@ -44,13 +44,19 @@ i386_init(void)
 	// Should always have an idle process as first one.
 	ENV_CREATE(user_idle);
 
+	// Start fs.
+	ENV_CREATE(fs_fs);
+
+	// Start init
 #ifdef TEST
 	// Don't touch -- used by grading script!
-	ENV_CREATE2(TEST, TESTSIZE)
+	ENV_CREATE2(TEST, TESTSIZE);
 #else
 	// Touch all you want.
-	ENV_CREATE(user_primes);
-#endif	// TEST*
+	// ENV_CREATE(user_writemotd);
+	// ENV_CREATE(user_testfsipc);
+	// ENV_CREATE(user_icode);
+#endif	// TEST
 	// Schedule and run the first user environment!
 	sched_yield();
 

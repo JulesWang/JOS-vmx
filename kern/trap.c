@@ -147,6 +147,9 @@ trap(struct Trapframe *tf)
 	// Handle clock and serial interrupts.
 	// LAB 4: Your code here.
 
+	// Handle keyboard interrupts.
+	// LAB 5: Your code here.
+
 	case IRQ_OFFSET + 8:  case IRQ_OFFSET + 9:
 	case IRQ_OFFSET + 10: case IRQ_OFFSET + 11:
 	case IRQ_OFFSET + 12: case IRQ_OFFSET + 13:
@@ -174,7 +177,6 @@ trap(struct Trapframe *tf)
 		env_run(curenv);
 	else
 		panic("unhandled trap in user mode");
-		sched_yield();
 }
 
 void

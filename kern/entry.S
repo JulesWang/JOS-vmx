@@ -61,8 +61,8 @@ relocated:
 	# stack backtraces will be terminated properly.
 	movl	$0x0,%ebp			# nuke frame pointer
 
-        # Leave a few words on the stack for the user trap frame
-	movl	$(bootstacktop-SIZEOF_STRUCT_TRAPFRAME),%esp
+        # Set the stack pointer
+	movl	$(bootstacktop),%esp
 
 	# now to C code
 	call	i386_init

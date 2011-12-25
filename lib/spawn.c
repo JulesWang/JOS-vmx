@@ -9,6 +9,7 @@
 static int init_stack(envid_t child, const char **argv, uintptr_t *init_esp);
 static int load_segment(envid_t child, int id,
 			struct Proghdr *ph, struct Elf *elf, size_t elf_size);
+static int copy_shared_pages(envid_t child);
 
 // Load a page from a program binary into an environment 'dst_env'
 // at virtual address 'pg', and with permissions 'pg_perm'.
@@ -23,6 +24,13 @@ map_page(envid_t dst_env, int id, size_t offset, void *pg, unsigned pg_perm)
 	if (id >= PROGRAM_OFFSET)
 		return sys_program_page_map(dst_env, id, offset, pg, pg_perm);
 
+	// Otherwise, 'id' is a file descriptor, and you must read
+	// the page from the file system.
+	// Call read_map() to read the page into the current process's
+	// address space, then call sys_page_map to map the page into
+	// 'dst_env's memory space at address 'pg'.
+
+	// LAB 5: Your code here.
 	panic("load_page not implemented for file descriptors!");
 }
 
@@ -49,12 +57,26 @@ spawn(const char* progname, const char** argv)
 	//   - Set 'elf_size' to the program's ELF binary size using
 	//     sys_program_size.
 	//
+	//   * LAB 5 EXERCISE: If the first character of progname is '/',
+	//     look up the program using 'open' (not sys_program_lookup)
+	//     and set 'elf_size' to its binary size using 'stat'
+	//     (not sys_program_size).
+	//
+	//     Program IDs returned by sys_program_lookup are greater than
+	//     or equal to PROGRAM_OFFSET (0x40000000).
+	//     No file descriptors are that big, so use a single variable
+	//     to hold either the program ID or the file descriptor number.
+	//     The map_page function above tests the ID against PROGRAM_OFFSET.
+	//
+	//     Also, make sure you close the file descriptor, if any,
+	//     before returning from spawn().
+	//
 	//   - Map the program's first page at UTEMP using the map_page helper.
 	//
 	//   - Copy the 512-byte ELF header from UTEMP into elf_header_buf.
 	//
 	//   - Read the ELF header, as you have before, and sanity check its
-	//     magic number.  (Check out your load_icode for hints!)
+	//     magic number.  (Check out your load_elf for hints!)
 	//
 	//   - Use sys_exofork() to create a new environment.
 	//
@@ -63,7 +85,7 @@ spawn(const char* progname, const char** argv)
 	//     a good starting point.  It is accessible at
 	//     envs[ENVX(child)].env_tf.
 	//     Hint: You must do something with the program's entry point.
-	//     What?  (See load_icode!)
+	//     What?  (See load_elf!)
 	//
 	//   - Call the init_stack() function to set up the initial stack
 	//     page for the child environment.
@@ -197,7 +219,7 @@ load_segment(envid_t child, int id, struct Proghdr* ph,
 	//
 	//    * If the ELF segment flags DO include ELF_PROG_FLAG_WRITE,
 	//	then the segment contains read/write data and bss.
-	//	As with load_icode(), such an ELF segment
+	//	As with load_elf(), such an ELF segment
 	//	occupies p_memsz bytes in memory, but only the first
 	//	p_filesz bytes of the segment are actually loaded
 	//	from the executable file -- you must clear the rest to zero.
@@ -210,7 +232,7 @@ load_segment(envid_t child, int id, struct Proghdr* ph,
 	//	if you like, because sys_page_alloc() returns zeroed pages
 	//	already.)  Finally, insert the correct page mapping into
 	//	the child, and unmap the page at UTEMP2.
-	//	Look at load_icode() and fork() for inspiration.
+	//	Look at load_elf() and fork() for inspiration.
 	//
 	// Note: All of the segment addresses or lengths above
 	// might be non-page-aligned, so you must deal with
@@ -222,5 +244,21 @@ load_segment(envid_t child, int id, struct Proghdr* ph,
 	// LAB 4: Your code here.
 	panic("load_segment not completed!\n");
 	return -1;
+}
+
+// Copy the mappings for shared pages into the child address space.
+static int
+copy_shared_pages(envid_t child)
+{
+	int r;
+	uint32_t va;
+
+	// Loop over all pages in the current address space,
+	// and copy any pages marked as PTE_SHARE into 'child'
+	// at the same location and with the same permissions.
+	// Hint: Use vpd, vpt, and sys_page_map.
+
+	// LAB 5: Your code here.
+	return 0;
 }
 

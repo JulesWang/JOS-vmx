@@ -266,7 +266,7 @@ sys_ipc_recv(void *dstva)
 
 // Lab 4 Exercise 8:
 // Try to send 'value' to the target env 'envid'.
-// If va != 0, then also send page currently mapped at 'va',
+// If srcva < UTOP, then also send page currently mapped at 'srcva',
 // so that receiver gets a duplicate mapping of the same page.
 //
 // The send fails with a return value of -E_IPC_NOT_RECV if the

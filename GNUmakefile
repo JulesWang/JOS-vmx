@@ -108,9 +108,10 @@ include boot/Makefrag
 include kern/Makefrag
 include lib/Makefrag
 include user/Makefrag
+include fs/Makefrag
 
 
-IMAGES = $(OBJDIR)/kernel.img
+IMAGES = $(OBJDIR)/kernel.img $(OBJDIR)/fs.img
 
 bochs: $(IMAGES)
 	bochs 'display_library: nogui'
