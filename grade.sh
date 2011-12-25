@@ -34,6 +34,8 @@ runbochs () {
 	brkaddr=`grep 'readline$' obj/kernel.sym | sed -e's/ .*$//g'`
 	#echo "brkaddr $brkaddr"
 
+	readline_hack=`grep 'readline_hack$' obj/kernel.sym | sed -e's/ .*$//g' | sed -e's/^f//'`
+
 	# Run Bochs, setting a breakpoint at readline(),
 	# and feeding in appropriate commands to run, then quit.
 	(
@@ -43,6 +45,12 @@ runbochs () {
 		echo vbreak 0x8:0x$brkaddr
 		psleep .1
 		echo c
+		if test "$readline_hackval" != 0; then
+			psleep .1
+			echo setpmem 0x$readline_hack 1 $readline_hackval
+			psleep .1
+			echo c
+		fi	
 		# EOF will do just fine to quit.
 	) | (
 		ulimit -t $timeout
@@ -53,53 +61,49 @@ runbochs () {
 
 
 
+readline_hackval=1
 gmake
 runbochs
 
 score=0
 
-	echo_n "Printf: "
-	if grep "6828 decimal is 15254 octal!" bochs.out >/dev/null
-	then
-		score=`expr 20 + $score`
-		echo OK
-	else
-		echo WRONG
-	fi
+echo_n "Page directory: "
+ if grep "boot_mem_check() succeeded!" bochs.out >/dev/null
+ then
+	score=`expr 20 + $score`
+	echo OK
+ else
+	echo WRONG
+ fi
 
-	echo_n "Backtrace: "
-	cnt=`grep "ebp f01.* eip f01.* args" bochs.out | wc -l`
-	if [ $cnt -eq 8 ]
-	then
-		score=`expr 15 + $score`
-		echo_n "Count OK"
-	else
-		echo_n "Count WRONG"
-	fi
+echo_n "Page management: "
+ if grep "page_check() succeeded!" bochs.out >/dev/null
+ then
+	score=`expr 30 + $score`
+	echo OK
+ else
+	echo WRONG
+ fi
 
-	cnt=`grep "ebp f01.* eip f0100.* args" bochs.out | awk 'BEGIN { FS = ORS = " " }
-{ print $7 }
-END { printf("\n") }' | grep '^00000000 00000000 00000001 00000002 00000003 00000004 00000005' | wc -w`
-	if [ $cnt -eq 8 ]; then
-		score=`expr 15 + $score`
-		echo , Args OK
-	else
-		echo , Args WRONG
-	fi
+echo_n "Kernel breakpoint interrupt: "
+ if grep "^TRAP frame at 0x" bochs.out >/dev/null \
+     && grep "  trap 0x00000003 Breakpoint" bochs.out >/dev/null
+ then
+	score=`expr 10 + $score`
+	echo OK
+ else
+	echo WRONG
+ fi
 
-	echo_n "Debugging symbols: "
-	cnt=`grep "kern/init.c.*test_backtrace.*1 arg)" bochs.out | wc -l`
-	if [ $cnt -eq 6 ]; then
-		score=`expr 25 + $score`
-		echo OK
-	else
-		echo WRONG
-	fi
+echo_n "Returning from breakpoint interrupt: "
+ if grep "Breakpoint succeeded!" bochs.out >/dev/null
+ then
+	score=`expr 10 + $score`
+	echo OK
+ else
+	echo WRONG
+ fi
 
-echo "Score: $score/75"
-
-if [ $score -lt 75 ]; then
-	exit 1
-fi
+echo "Score: $score/70"
 
 
