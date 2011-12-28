@@ -20,28 +20,26 @@
 // |      Index     |      Index     |                     |
 // +----------------+----------------+---------------------+
 //  \--- PDX(la) --/ \--- PTX(la) --/ \---- PGOFF(la) ----/
-//  \----------- PPN(la) -----------/
+//  \---------- PGNUM(la) ----------/
 //
-// The PDX, PTX, PGOFF, and PPN macros decompose linear addresses as shown.
+// The PDX, PTX, PGOFF, and PGNUM macros decompose linear addresses as shown.
 // To construct a linear address la from PDX(la), PTX(la), and PGOFF(la),
 // use PGADDR(PDX(la), PTX(la), PGOFF(la)).
 
 // page number field of address
-#define PPN(la)		(((uintptr_t) (la)) >> PTXSHIFT)
-#define VPN(la)		PPN(la)		// used to index into vpt[]
+#define PGNUM(la)	(((uintptr_t) (la)) >> PGSHIFT)
 
 // page directory index
-#define PDX(la)		((((uintptr_t) (la)) >> PDXSHIFT) & 0x3FF)
-#define VPD(la)		PDX(la)		// used to index into vpd[]
+#define PDX(la)		((((uintptr_t) (la)) >> PTSHIFT) & 0x3FF)
 
 // page table index
-#define PTX(la)		((((uintptr_t) (la)) >> PTXSHIFT) & 0x3FF)
+#define PTX(la)		((((uintptr_t) (la)) >> PGSHIFT) & 0x3FF)
 
 // offset in page
 #define PGOFF(la)	(((uintptr_t) (la)) & 0xFFF)
 
 // construct linear address from indexes and offset
-#define PGADDR(d, t, o)	((void*) ((d) << PDXSHIFT | (t) << PTXSHIFT | (o)))
+#define PGADDR(d, t, o)	((void*) ((d) << PDXSHIFT | (t) << PGSHIFT | (o)))
 
 // Page directory and page table constants.
 #define NPDENTRIES	1024		// page directory entries per page directory
@@ -52,9 +50,6 @@
 
 #define PTSIZE		(PGSIZE*NPTENTRIES) // bytes mapped by a page directory entry
 #define PTSHIFT		22		// log2(PTSIZE)
-
-#define PTXSHIFT	12		// offset of PTX in a linear address
-#define PDXSHIFT	22		// offset of PDX in a linear address
 
 // Page table/directory entry flags.
 #define PTE_P		0x001	// Present

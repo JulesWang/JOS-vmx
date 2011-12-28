@@ -5,11 +5,17 @@
 #define BUFLEN 1024
 static char buf[BUFLEN];
 
+char readline_hack;
 
 char *
 readline(const char *prompt)
 {
 	int i, c, echoing;
+
+	if (readline_hack) {
+		strcpy(buf, "exit");
+		return buf;
+	}
 
 	if (prompt != NULL)
 		cprintf("%s", prompt);
