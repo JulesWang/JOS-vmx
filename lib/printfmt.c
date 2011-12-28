@@ -206,7 +206,7 @@ vprintfmt(void (*putch)(int, void*), void *putdat, const char *fmt, va_list ap)
 
 		// (unsigned) octal
 		case 'o':
-			// lab1
+			// LAB1: Your code here. 
 			num = getuint(&ap, lflag);
 			base = 8;
 			goto number;

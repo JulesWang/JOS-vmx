@@ -178,7 +178,7 @@ debuginfo_eip(uintptr_t addr, struct Eipdebuginfo *info)
 	//	There's a particular stabs type used for line numbers.
 	//	Look at the STABS documentation and <inc/stab.h> to find
 	//	which one.
-	// lab1
+	// LAB1: Your code here.
         stab_binsearch(stabs, &lline, &rline, N_SLINE, addr);
 
         if (lline <= rline) {
@@ -203,7 +203,7 @@ debuginfo_eip(uintptr_t addr, struct Eipdebuginfo *info)
 
 	// Set eip_fn_narg to the number of arguments taken by the function,
 	// or 0 if there was no containing function.
-	// lab1
+	// LAB1: Your code here.
         while (stabs[lfun+info->eip_fn_narg+1].n_type == N_PSYM) {
                 info->eip_fn_narg++;
         }

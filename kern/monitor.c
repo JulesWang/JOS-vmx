@@ -25,6 +25,7 @@ static struct Command commands[] = {
 	{ "help", "Display this list of commands", mon_help },
 	{ "kerninfo", "Display information about the kernel", mon_kerninfo },
 	{ "backtrace", "Display back trace information of function", mon_backtrace },
+    { "exit", "Exit from trap monitor", mon_exit },
 };
 #define NCOMMANDS (sizeof(commands)/sizeof(commands[0]))
 
@@ -60,54 +61,64 @@ mon_kerninfo(int argc, char **argv, struct Trapframe *tf)
 int
 mon_backtrace(int argc, char **argv, struct Trapframe *tf)
 {
-	// lab1
-       uintptr_t *ebp = 0;
-        uintptr_t *eip = 0;
+    // LAB1: Your code here.
+    uintptr_t *ebp = 0;
+    uintptr_t *eip = 0;
 
-        struct Eipdebuginfo info;
+    struct Eipdebuginfo info;
 
-        int i = 0;
-        int index = 0;
+    int i = 0;
+    int index = 0;
 
-        ebp = (uintptr_t *)read_ebp();
+    ebp = (uintptr_t *)read_ebp();
 
-        /* =stack=
-          |ebp|
-          |eip|
-          |param|
-          |param|
-          |param|
-          |param|
-          |param|
-          |param|
-          |ebp|
-          ....
-         */
-        cprintf("Stack backtrace:\n");
+    /* =stack=
+       |ebp|
+       |eip|
+       |param|
+       |param|
+       |param|
+       |param|
+       |param|
+       |param|
+       |ebp|
+       ....
+     */
+    cprintf("Stack backtrace:\n");
 
-        while (ebp != NULL) {
-                eip = (uintptr_t *)*(ebp + 1);
+    while (ebp != NULL) {
+        eip = (uintptr_t *)*(ebp + 1);
 
-                debuginfo_eip((uintptr_t)eip, &info);
+        debuginfo_eip((uintptr_t)eip, &info);
 
-                cprintf("%d: ebp %08x  eip %08x  args %08x %08x %08x %08x\n",
-                                index++, ebp, eip, *(ebp+2), *(ebp+3), *(ebp+4), *(ebp+5));
+        cprintf("%d: ebp %08x  eip %08x  args %08x %08x %08x %08x\n",
+                index++, ebp, eip, *(ebp+2), *(ebp+3), *(ebp+4), *(ebp+5));
 
-                cprintf("%s:%d: " , info.eip_file , info.eip_line);
+        cprintf("%s:%d: " , info.eip_file , info.eip_line);
 
-                for( i=0 ; i<info.eip_fn_namelen ; i++)
-                        cprintf("%c" , info.eip_fn_name[i]);
+        for( i=0 ; i<info.eip_fn_namelen ; i++)
+            cprintf("%c" , info.eip_fn_name[i]);
 
-                cprintf("+%x ", (uintptr_t)(eip) - info.eip_fn_addr);
-                cprintf("(%d arg)\n", info.eip_fn_narg);
+        cprintf("+%x ", (uintptr_t)(eip) - info.eip_fn_addr);
+        cprintf("(%d arg)\n", info.eip_fn_narg);
 
-                ebp = (uintptr_t *)*(ebp); 
-        }
+        ebp = (uintptr_t *)*(ebp); 
+    }
 
-	return 0;
+    return 0;
 }
 
+int
+mon_exit(int argc, char **argv, struct Trapframe *tf)
+{
+    if (tf == NULL)
+        return 0;
 
+    if (tf->tf_trapno == T_BRKPT)
+        return -1;
+
+    return 0;
+}
 
 /***** Kernel monitor command interpreter *****/
 

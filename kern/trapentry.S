@@ -35,4 +35,59 @@
 	jmp _alltraps
 
 .text
+TRAPHANDLER_NOEC(handler0,0);
+TRAPHANDLER_NOEC(handler1,1);
+TRAPHANDLER_NOEC(handler2,2);
+TRAPHANDLER_NOEC(handler3,3);
+TRAPHANDLER_NOEC(handler4,4);
+TRAPHANDLER_NOEC(handler5,5);
+TRAPHANDLER_NOEC(handler6,6);
+TRAPHANDLER_NOEC(handler7,7);
+TRAPHANDLER(handler8,8);
+TRAPHANDLER_NOEC(handler9,9);
+TRAPHANDLER(handler10,10);
+TRAPHANDLER(handler11,11);
+TRAPHANDLER(handler12,12);
+TRAPHANDLER(handler13,13);
+TRAPHANDLER(handler14,14);
+TRAPHANDLER(handler15,15);
+TRAPHANDLER_NOEC(handler16,16);
+TRAPHANDLER_NOEC(handler17,17);
+TRAPHANDLER_NOEC(handler18,18);
+TRAPHANDLER_NOEC(handler19,19);
 
+TRAPHANDLER_NOEC(handler48,T_SYSCALL);
+
+/* 
+struct Trapframe { 
+    struct Registers tf_regs; 
+    uint16_t tf_es; 
+    uint16_t tf_padding1; 
+    uint16_t tf_ds; 
+    uint16_t tf_padding2; 
+    uint32_t tf_trapno; 
+    // below here defined by x86 hardware 
+    // and pushed by the processor when an exception is taken 
+    ..... 
+} 
+ */ 
+_alltraps: 
+    pushl %ds 
+    pushl %es 
+    pushal 
+ 
+    movl $GD_KD , %eax 
+    movw %ax ,%ds 
+    movw %ax ,%es 
+ 
+    pushl %esp 
+ 
+    call trap 
+ 
+    pop %esp 
+    popal 
+    pop %es 
+    pop %ds 
+    addl $0x8 , %esp //ignore parameters--num and trapno 
+ 
+    iret
