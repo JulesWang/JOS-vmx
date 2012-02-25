@@ -413,7 +413,7 @@ cons_getc(void)
 void
 cons_putc(int c)
 {
-	lpt_putc(c);
+	//lpt_putc(c);
 	cga_putc(c);
 }
 
@@ -453,4 +453,14 @@ iscons(int fdnum)
 {
 	// used by readline
 	return 1;
+}
+
+void
+get_cursor_loc(void)
+{
+	/* Extract cursor location */
+	outb(addr_6845, 14);
+	crt_pos = inb(addr_6845 + 1) << 8;
+	outb(addr_6845, 15);
+	crt_pos |= inb(addr_6845 + 1);
 }

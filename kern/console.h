@@ -24,4 +24,5 @@ int cons_getc(void);
 void kbd_intr(void); // irq 1
 void serial_intr(void); // irq 4
 
+void get_cursor_loc(void);
 #endif /* _CONSOLE_H_ */

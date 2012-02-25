@@ -10,6 +10,7 @@
 #include <kern/kclock.h>
 #include <kern/trap.h>
 
+#include <inc/hvm/vt_init.h>
 
 void
 i386_init(void)
@@ -32,8 +33,9 @@ i386_init(void)
 	idt_init();
 
 	// Test IDT (lab 2 only)
-	__asm__ __volatile__("int3");
-	cprintf("Breakpoint succeeded!\n");
+	//__asm__ __volatile__("int3");
+	//cprintf("Breakpoint succeeded!\n");
+	has_vmx();
 
 	// Drop into the kernel monitor.
 	while (1)

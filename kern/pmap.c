@@ -5,7 +5,6 @@
 #include <inc/error.h>
 #include <inc/string.h>
 #include <inc/assert.h>
-
 #include <kern/pmap.h>
 #include <kern/kclock.h>
 
@@ -189,8 +188,8 @@ boot_mem_init(void)
 
 	// Turn on paging.
 	cr0 = rcr0();
-	cr0 |= CR0_PE|CR0_PG|CR0_AM|CR0_WP|CR0_NE|CR0_TS|CR0_EM|CR0_MP;
-	cr0 &= ~(CR0_TS|CR0_EM);
+	cr0 |= CR0_PE|CR0_PG;//|CR0_AM|CR0_WP|CR0_NE|CR0_TS|CR0_EM|CR0_MP;
+	//cr0 &= ~(CR0_TS|CR0_EM);
 	lcr0(cr0);
 
 	// Current mapping: VA KERNBASE+x => LA x => PA x.
@@ -198,8 +197,10 @@ boot_mem_init(void)
 
 	// Reload all segment registers.
 	asm volatile("lgdt gdt_pd");
-	asm volatile("movw %%ax,%%gs" :: "a" (GD_UD|3));
-	asm volatile("movw %%ax,%%fs" :: "a" (GD_UD|3));
+	//asm volatile("movw %%ax,%%gs" :: "a" (GD_UD|3));
+	//asm volatile("movw %%ax,%%fs" :: "a" (GD_UD|3));
+	asm volatile("movw %%ax,%%gs" :: "a" (GD_KD));
+	asm volatile("movw %%ax,%%fs" :: "a" (GD_KD));
 	asm volatile("movw %%ax,%%es" :: "a" (GD_KD));
 	asm volatile("movw %%ax,%%ds" :: "a" (GD_KD));
 	asm volatile("movw %%ax,%%ss" :: "a" (GD_KD));

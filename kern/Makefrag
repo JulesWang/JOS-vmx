@@ -29,7 +29,12 @@ KERN_SRCFILES :=	kern/entry.S \
 			kern/kdebug.c \
 			lib/printfmt.c \
 			lib/readline.c \
-			lib/string.c
+			lib/string.c \
+			hvm/vt_init.c \
+			hvm/vt_regs.c \
+			hvm/vt.c \
+			hvm/vt_ept.c \
+			hvm/asm_vmop.S
 
 # Only build files if they exist.
 KERN_SRCFILES := $(wildcard $(KERN_SRCFILES))
@@ -40,6 +45,7 @@ KERN_OBJFILES := $(patsubst %.c, $(OBJDIR)/%.o, $(KERN_SRCFILES))
 KERN_OBJFILES := $(patsubst %.S, $(OBJDIR)/%.o, $(KERN_OBJFILES))
 KERN_OBJFILES := $(patsubst %.cc, $(OBJDIR)/%.o, $(KERN_OBJFILES))
 KERN_OBJFILES := $(patsubst obj/lib/%, obj/kern/%, $(KERN_OBJFILES))
+KERN_OBJFILES := $(patsubst obj/hvm/%, obj/kern/%, $(KERN_OBJFILES))
 
 KERN_BINFILES := $(patsubst %, $(OBJDIR)/%, $(KERN_BINFILES))
 
@@ -64,6 +70,16 @@ $(OBJDIR)/kern/%.o: lib/%.c
 	@mkdir -p $(@D)
 	$(V)$(CC) -nostdinc $(KERN_CFLAGS) -c -o $@ $<
 
+$(OBJDIR)/kern/%.o: hvm/%.S
+	@echo + as $<
+	@mkdir -p $(@D)
+	$(V)$(CC) -nostdinc $(KERN_CFLAGS) -c -o $@ $<
+
+$(OBJDIR)/kern/%.o: hvm/%.c
+	@echo + cc $<
+	@mkdir -p $(@D)
+	$(V)$(CC) -nostdinc $(KERN_CFLAGS) -c -o $@ $<
+
 # How to build the kernel itself
 $(OBJDIR)/kernel: $(KERN_OBJFILES) $(KERN_BINFILES) kern/kernel.ld
 	@echo + ld $@
@@ -84,9 +100,8 @@ all: $(OBJDIR)/kernel.img
 
 grub: $(OBJDIR)/jos-grub
 
-install-grub: $(OBJDIR)/jos-grub $(OBJDIR)/fs.img
+install-grub: $(OBJDIR)/jos-grub 
 	sudo cp $(OBJDIR)/jos-grub /boot/jos
-	test $$USER = kohler && sudo cp $(OBJDIR)/fs.img /dev/hda2
 
 $(OBJDIR)/jos-grub: $(OBJDIR)/kernel
 	@echo + oc $@

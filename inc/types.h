@@ -6,7 +6,11 @@
 #endif
 
 // Represents true-or-false values
-typedef int bool;
+// typedef int bool;
+typedef enum {
+	false = 0,
+	true = 1,
+} bool;
 
 // Explicitly-sized versions of integer types
 typedef __signed char int8_t;
@@ -17,6 +21,23 @@ typedef int int32_t;
 typedef unsigned int uint32_t;
 typedef long long int64_t;
 typedef unsigned long long uint64_t;
+
+// types imported from bitvisor
+typedef signed char		i8;
+typedef signed short int	i16;
+typedef signed int		i32;
+typedef signed long long int	i64;
+typedef unsigned char		u8;
+typedef unsigned short int	u16;
+typedef unsigned int		u32;
+typedef unsigned long long int	u64;
+typedef unsigned int		uint;
+typedef unsigned long int	ulong;
+typedef unsigned long int	size_t;
+typedef unsigned long int	addr_t;
+typedef unsigned long int	virt_t;
+typedef unsigned int		phys32_t;
+typedef unsigned long long int	phys_t;
 
 // Pointers and addresses are 32 bits long.
 // We use pointer types to represent virtual addresses,
@@ -30,7 +51,7 @@ typedef uint32_t physaddr_t;
 typedef uint32_t ppn_t;
 
 // size_t is used for memory object sizes.
-typedef uint32_t size_t;
+// typedef uint32_t size_t;
 // ssize_t is a signed version of ssize_t, used in case there might be an
 // error return.
 typedef int32_t ssize_t;

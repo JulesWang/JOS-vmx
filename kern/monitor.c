@@ -12,6 +12,8 @@
 #include <kern/kdebug.h>
 #include <kern/trap.h>
 
+#include <inc/hvm/vt.h>
+
 #define CMDBUF_SIZE	80	// enough for one VGA text line
 
 struct Command {
@@ -26,6 +28,8 @@ static struct Command commands[] = {
 	{ "kerninfo", "Display information about the kernel", mon_kerninfo },
 	{ "backtrace", "Display back trace information of function", mon_backtrace },
     { "exit", "Exit from trap monitor", mon_exit },
+    { "matrix", "Build a Matrix", mon_matrix },
+    { "cpuid", "Instruction cpuid", mon_cpuid },
 };
 #define NCOMMANDS (sizeof(commands)/sizeof(commands[0]))
 
@@ -119,6 +123,27 @@ mon_exit(int argc, char **argv, struct Trapframe *tf)
 
     return 0;
 }
+
+int
+mon_matrix(int argc, char **argv, struct Trapframe *tf)
+{
+	vt_main();
+	return 0;
+}
+
+int
+mon_cpuid(int argc, char **argv, struct Trapframe *tf)
+{
+	u32 ia, oa, ob, oc, od;
+
+	//code word
+	ia = 0xFeedCafe;
+
+	cpuid(ia, &oa, &ob, &oc, &od);
+	cprintf("%#x\n", oa);
+	return 0;
+}
+	
 
 /***** Kernel monitor command interpreter *****/
 
