@@ -11,11 +11,11 @@ JOS-vmx(JOS Virtual Machine eXtansion) is a JOS extansion exercise using by TC g
 
 Brief note
 -------
-Step1: > make
-Step2: > make install-grub
-Step3: Add a JOS entry in your grub 
-Step4: Reboot computer
-Step5: Enter JOS in grub
+* Step1: > make
+* Step2: > make install-grub
+* Step3: Add a JOS entry in your grub 
+* Step4: Reboot computer
+* Step5: Enter JOS in grub
 
 Sayings
 -------
