@@ -99,9 +99,10 @@ ept_update_identity_table (
 		for(i = 0; i < EPT_EACHTABLE_ENTRIES; i++)
 		{
 			panic("ept_update_identity_table not implemented");
-			/*Lab3: set the mapping and attributes for all entries*/
-			/*NOTE: set MTRR_TYPE_UNCACHE to the emt of read only memory address*/
-			/*NOTE: the max memory size of JOS is less than 64MB.
+			/*Ex3: set the mapping and attributes for all entries*/
+			/* hint: 3B 25 EXTENDED PAGE TABLES (EPT) */
+			/* NOTE: set MTRR_TYPE_UNCACHE to the emt of read only memory address*/
+			/* NOTE: the max memory size of JOS is less than 64MB.
 			 *      To make sure that VM will not overwrite this memory region,
 			 *      we shall give a offset of the mapping of memory address 
 			 *      above 0x0010 0000.(FIXME)
@@ -127,7 +128,7 @@ ept_update_identity_table (
 	if (ept_entry.epte == 0 ) 
 	{
 		panic("ept_update_identity_table not implemented");
-		/* Lab3: alloc page as sub page table and set the entry */
+		/* Ex3: alloc page as sub page table and set the entry */
 		/* hint: page_alloc */
 		/* hint: ept_entry.mfn = GFN(sub_pt_phys); */
   	} 
