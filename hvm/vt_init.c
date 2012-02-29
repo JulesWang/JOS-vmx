@@ -43,7 +43,7 @@ has_vmx(void)
 	uint64_t tmp;
 
 	panic("has_vmx not implemented!");
-	/* Lab1: Check whether CPU has vmx support */
+	/* Ex1: Check whether CPU has vmx support */
 	/* hint: Intel Manual 3B: 19.6 DISCOVERING SUPPORT FOR VMX */
 	/* hint: cpuid() */
 
@@ -97,21 +97,21 @@ vmx_on (void)
 	asm_wrcr4 (cr4);
 
 	panic("vmx_on not implemented");
-	/* Lab2: set VMXE bit of CR4 to enable VMX */
+	/* Ex2: set VMXE bit of CR4 to enable VMX */
 	/* hint: CR4_VMXE_BIT */
 
 
-	/* Lab2: alloc vmxon region */
+	/* Ex2: alloc vmxon region */
 	/* hint: 20.10.4 VMXON Region */
 	/* hint: page_alloc */
 
 
-	/* Lab2: write a VMCS revision identifier */
+	/* Ex2: write a VMCS revision identifier */
 	/* hint: 20.10.4 VMXON Region */
 	/* hint: asm_rdmsr32 */
 
 
-	/* Lab2: execute vmxon */
+	/* Ex2: execute vmxon */
 	/* hint: asm_vmxon() */
 }
 
@@ -143,7 +143,7 @@ set_vmcs_ctl(void)
 
 
 	panic("set_vmcs_ctl not implemented");
-	/* Lab4: enable EPT and Unrestricted Guest */
+	/* Ex4: enable EPT and Unrestricted Guest */
 	/* hint: 20.6.2 Processor-Based VM-Execution Controls */
 	/* hint: procbased_ctls&procbased_ctls(just twe lines code) */
 
@@ -305,15 +305,15 @@ static void
 vmcs_setup(void)
 {
 	panic("vmcs_setup not implemented");
-	/* Lab4: alloc VMCS region */
+	/* Ex4: alloc VMCS region */
 	/* hint: refer to vmx_on() */
 
-	/* Lab4: write a VMCS revision identifier */
+	/* Ex4: write a VMCS revision identifier */
 	/* hint: 20.2 FORMAT OF THE VMCS REGION */
 	/* hint: refer to vmx_on() */
 
 
-	/* Lab4: Load VMCS pointer */
+	/* Ex4: Load VMCS pointer */
 	/* hint: asm_vmclear() and asm_vmptrld() */
 
 

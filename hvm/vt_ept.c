@@ -101,15 +101,16 @@ ept_update_identity_table (
 			panic("ept_update_identity_table not implemented");
 			/*Lab3: set the mapping and attributes for all entries*/
 			/*NOTE: set MTRR_TYPE_UNCACHE to the emt of read only memory address*/
-			/*NOTE: the memory address of JOS is above 0x1000 0000(kern/Makefrag:108)
+			/*NOTE: the max memory size of JOS is less than 64MB.
 			 *      To make sure that VM will not overwrite this memory region,
 			 *      we shall give a offset of the mapping of memory address 
-			 *      above 0x1000 00000.
+			 *      above 0x0010 0000.(FIXME)
+			 *      Guest PA                PA
 			 *      --------------       ------------
 			 *      |            |    ___|          |
-			 *      --------------   /   ------------
+			 *      --------------   /   ------------0x0400 0000(64MB)
 			 *      |            |__/    |JOS memory|
-			 *      --------------       ----------- 0x1000 0000
+			 *      --------------       ----------- 0x0010 0000(1MB)
 			 *      |            |_______|          |
 			 *      --------------       -----------
 			 */

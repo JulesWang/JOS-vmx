@@ -92,14 +92,16 @@ do_cpuid (void)
 
 	vt_read_general_reg(GENERAL_REG_RAX, &la);
 
-	//Lab5: Add your code here
+	/* Ex5: Add your code here */
+	if (la == 0xFeedCafe) {
 
+	}
 
 	ia = la;
 	cpuid(ia, &oa, &ob, &oc, &od);
 
 	/* remove vmx support in Matrix */
-	if(ia == CPUID_1)
+	if (ia == CPUID_1)
 		oc &= ~CPUID_1_ECX_VMX_BIT;
 
 	vt_write_general_reg(GENERAL_REG_RAX, oa);
