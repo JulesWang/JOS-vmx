@@ -25,6 +25,7 @@ Brief note
 * Step5: Enter JOS in grub
 
 alternative:
+
 * Step1: Download bochs-2.4.5
 * Step2: ./configure --enable-debugger  --enable-vmx=2 --enable-x86-64 --prefix=/usr
 * Step3: make & make install
