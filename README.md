@@ -14,6 +14,7 @@ Prerequisite
 * Have read the Chapter 19 INTRODUCTION TO VIRTUAL-MACHINE EXTENSIONS of Intel Software Developer's Manual Volume 3B System Programming Guide, Part 2(3B in brief).
 * Have finished JOS Lab2.
 * Have known what is the "**Matrix**". 
+* Have EPT and Unrestricted guest features present in the CPU. This is not necessary if you use bochs emulator instead.
 
 Brief note
 -------
@@ -22,6 +23,12 @@ Brief note
 * Step3: Add a JOS entry in system grub list
 * Step4: Reboot your computer
 * Step5: Enter JOS in grub
+
+alternative:
+* Step1: Download bochs-2.4.5
+* Step2: ./configure --enable-debugger  --enable-vmx=2 --enable-x86-64 --prefix=/usr
+* Step3: make & make install
+* Following process is just the same as what we did in JOS lab.
 
 Sayings
 -------

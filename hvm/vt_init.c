@@ -47,6 +47,25 @@ has_vmx(void)
 	/* hint: Intel Manual 3B: 19.6 DISCOVERING SUPPORT FOR VMX */
 	/* hint: cpuid() */
 
+	/* 19.7 ENABLING AND ENTERING VMX OPERATION */
+	/* For Bochs users */
+msr_enable_loop:
+	asm_rdmsr64 (MSR_IA32_FEATURE_CONTROL, &tmp);
+	if (tmp & MSR_IA32_FEATURE_CONTROL_LOCK_BIT) {
+		if (tmp & MSR_IA32_FEATURE_CONTROL_VMXON_BIT) {
+			/* VMXON is enabled. */
+		} else {
+			cprintf ("VMXON is disabled.\n");
+			return -1;
+		}
+	} else {
+		cprintf ("Trying to enable VMXON.\n");
+		tmp |= MSR_IA32_FEATURE_CONTROL_VMXON_BIT;
+		tmp |= MSR_IA32_FEATURE_CONTROL_LOCK_BIT;
+		asm_wrmsr64 (MSR_IA32_FEATURE_CONTROL, tmp);
+		goto msr_enable_loop;
+	}
+
 	/* 20.6.2 Processor-Based VM-Execution Controls */
 	uint32_t low,high;
 	asm_rdmsr32(MSR_IA32_VMX_PROCBASED_CTLS, &low, &high);
