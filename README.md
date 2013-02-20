@@ -37,7 +37,7 @@ Sayings
 "When you have learned to snatch the error code from the trap frame, it will be time for you to leave." --- 《The Tao Of Programming》
 
 
-"When you have learned to create the MATRIX, it will be time for you to leave." --- kight
+"When you have learned to create the MATRIX, it will be time for you to leave." --- Jules Wang
 
 JOS CODING STANDARDS
 --------------------
