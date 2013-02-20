@@ -13,7 +13,7 @@ Prerequisite
 -------
 * Have read the Chapter 19 INTRODUCTION TO VIRTUAL-MACHINE EXTENSIONS of Intel Software Developer's Manual Volume 3B System Programming Guide, Part 2(3B in brief).
 * Have finished JOS Lab2.
-* Have known what is the "**Matrix**". 
+* Have known what is the **Matrix**. 
 * Have EPT and Unrestricted guest features present in the CPU. This is not necessary if you use bochs emulator instead.
 
 Brief note
