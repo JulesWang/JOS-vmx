@@ -1,13 +1,13 @@
 JOS
 -----
-JOS is a teaching OS using by MIT/Stanford/UCLA OS course.
+JOS is a teaching OS using by MIT/Stanford/UCLA OS course. There are several hands-on exercises in it. 
 
 The code in this git repo comes from UCLA OS course website:
 http://www.cs.ucla.edu/~kohler/class/06f-aos/index.html
 
 JOS-vmx
 -------
-JOS-vmx(JOS Virtual Machine eXtansion) is a JOS extansion exercise using by TC group of Shanghai JiaoTong University.
+JOS-vmx(JOS Virtual Machine eXtensions) is another hands-on exercise, which aims at turning JOS into a hypervisor by utilizing hardware assisted virtualization(ex. Intel-vt).
 
 Prerequisite
 -------
