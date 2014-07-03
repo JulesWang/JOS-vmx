@@ -164,7 +164,7 @@ set_vmcs_ctl(void)
 	panic("set_vmcs_ctl not implemented");
 	/* Ex4: enable EPT and Unrestricted Guest */
 	/* hint: 20.6.2 Processor-Based VM-Execution Controls */
-	/* hint: procbased_ctls&procbased_ctls(just twe lines code) */
+	/* hint: procbased_ctls and procbased_ctls2 */
 
 	/* bug fix */
 	procbased_ctls_or &= ~(VMCS_PROC_BASED_VMEXEC_CTL_CR3LOADEXIT_BIT | 
