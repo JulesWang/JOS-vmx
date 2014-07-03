@@ -79,7 +79,8 @@ typedef union {
 
 #define MTRR_TYPE_WRBACK        6
 #define MTRR_TYPE_UNCACHE        0
-#define EPT_DEFAULT_MT          MTRR_TYPE_WRBACK
+//#define EPT_DEFAULT_MT          MTRR_TYPE_WRBACK
+#define EPT_DEFAULT_MT          MTRR_TYPE_UNCACHE
 #define EPT_DEFAULT_WL          3
 
 #define EPT_TABLE_ORDER         9
