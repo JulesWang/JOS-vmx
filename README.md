@@ -16,7 +16,13 @@ Prerequisite
 * Have known what is the **Matrix**. 
 * Have EPT and Unrestricted guest features present in the CPU. This is not necessary if you use bochs emulator instead.
 
-Brief note
+Exercise 
+-------
+There are five exercises: Ex1 - Ex5
+
+As Ex3(EPT) is more complicated than others, here is a [guide](https://github.com/JulesWang/JOS-vmx/wiki/EPT) on it.
+
+Command
 -------
 * Step1: > make
 * Step2: > make install-grub
@@ -47,6 +53,7 @@ When Ex1 - Ex5 are completed
 > You will get 'deadbeef'. If you get that, it means that you are in the Matrix.
 
 > Congratulations!
+
 
 
 alternative(not recommended, using this way only if you have no suitable machine)
