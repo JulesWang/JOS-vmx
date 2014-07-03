@@ -55,12 +55,12 @@ GCCPREFIX := $(shell if i386-jos-elf-objdump -i 2>&1 | grep '^elf32-i386$$' >/de
 	echo "***" 1>&2; exit 1; fi)
 endif
 
-CC	:= $(GCCPREFIX)gcc -pipe
+CC	:= $(GCCPREFIX)gcc -pipe -m32
 GCC_LIB := $(shell $(CC) -print-libgcc-file-name)
 AS	:= $(GCCPREFIX)as
 AR	:= $(GCCPREFIX)ar
-LD	:= $(GCCPREFIX)ld
-OBJCOPY	:= $(GCCPREFIX)objcopy
+LD	:= $(GCCPREFIX)ld -melf_i386
+OBJCOPY	:= $(GCCPREFIX)objcopy -I elf32-i386 -O elf32-i386
 OBJDUMP	:= $(GCCPREFIX)objdump
 NM	:= $(GCCPREFIX)nm
 
