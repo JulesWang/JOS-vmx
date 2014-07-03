@@ -92,9 +92,14 @@ do_cpuid (void)
 
 	vt_read_general_reg(GENERAL_REG_RAX, &la);
 
-	/* Ex5: Add your code here */
+	/* Ex5: The CODE */
+	/* Assign a speical 'code' to RAX, like 0xDeadBeef. */
+	/* So when you execute cpuid with the value of RAX  */
+	/* equals to '0xFeedCafe', you will get the respond.*/
+	/* The respond indicates that you are in the Matrix.*/
+	/* Hint: vt_write_general_reg(), add_ip()           */
 	if (la == 0xFeedCafe) {
-
+		/* Add your code here. */
 	}
 
 	ia = la;
