@@ -20,16 +20,38 @@ Brief note
 -------
 * Step1: > make
 * Step2: > make install-grub
-* Step3: Add a JOS entry in system grub list
+* Step3: Add a JOS entry in your system grub list(eg. /boot/grub/menu.lst)
+
+Something like this:
+<pre>
+title JOS-vmx
+        root (hd0,0)
+        kernel /jos
+</pre>
 * Step4: Reboot your computer
 * Step5: Enter JOS in grub
 
-alternative:
+When Ex1 - Ex5 are completed
+
+* Step6: Type matrix in JOS command line:
+
+>  K>matrix
+
+> You will create a VM which contains JOS itself, so don't be panic when the system seems to be rebooting. It is not rebooting, it is just booting the VM.
+
+* Step7: Enter JOS in grub in the matrix
+* Step8: Type cpuid in JOS command line
+
+> K>cpuid
+
+> You will get 'deadbeef'. If you get that, it means that you are in the Matrix.
+
+alternative(not recommended)
 
 * Step1: Download bochs-2.4.5
 * Step2: ./configure --enable-debugger  --enable-vmx=2 --enable-x86-64 --prefix=/usr
 * Step3: make & make install
-* Following process is just the same as what we did in JOS lab.
+* The following process is just the same as what we did in JOS lab.
 
 Sayings
 -------
